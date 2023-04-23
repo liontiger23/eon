@@ -18,20 +18,20 @@ revDepsOf pkgs = do
   infos <- eopkgInfo pkgs
   return $
     infos
-    |> filter is_remote
-    |> map extract_revdeps
+    |> filter isRemote
+    |> map extractRevDeps
     |> concat
-    |> filter (not . is_subpackage)
+    |> filter (not . isSubpackage)
   where
-    is_remote = (`contains` "Package found")
-    is_subpackage pkg = (pkg `endsWith`) `any` ["dbginfo", "devel"]
-    extract_revdeps = words . (=~ "[^:]+\\z")
+    isRemote = (`contains` "Package found")
+    isSubpackage pkg = (pkg `endsWith`) `any` ["dbginfo", "devel"]
+    extractRevDeps = words . (=~ "[^:]+\\z")
 
 collectRevDeps :: [String] -> IO [String]
 collectRevDeps start = do
-  revdeps <- revDepsOf start
-  if null revdeps
+  revDeps <- revDepsOf start
+  if null revDeps
     then return start
     else do
-      tree <- collectRevDeps revdeps
-      return (start ++ revdeps ++ tree)
+      tree <- collectRevDeps revDeps
+      return (start ++ revDeps ++ tree)
