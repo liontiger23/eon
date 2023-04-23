@@ -1,5 +1,5 @@
 module Dependencies
-  ( collect_revdeps
+  ( collectRevDeps
   ) where
 
 import Data.List.Split (splitOn)
@@ -8,14 +8,14 @@ import Text.Regex.PCRE ((=~))
 
 import Ergonomics
 
-eopkg_info :: [String] -> IO [String]
-eopkg_info pkgs = do
+eopkgInfo :: [String] -> IO [String]
+eopkgInfo pkgs = do
   info <- readProcess "eopkg" ("info" : pkgs) []
   return $ splitOn "\n\n" info
 
-revdeps_of :: [String] -> IO [String]
-revdeps_of pkgs = do
-  infos <- eopkg_info pkgs
+revDepsOf :: [String] -> IO [String]
+revDepsOf pkgs = do
+  infos <- eopkgInfo pkgs
   return $
     infos
     |> filter is_remote
@@ -24,14 +24,14 @@ revdeps_of pkgs = do
     |> filter (not . is_subpackage)
   where
     is_remote = (`contains` "Package found")
-    is_subpackage pkg = (pkg `ends_with`) `any` ["dbginfo", "devel"]
+    is_subpackage pkg = (pkg `endsWith`) `any` ["dbginfo", "devel"]
     extract_revdeps = words . (=~ "[^:]+\\z")
 
-collect_revdeps :: [String] -> IO [String]
-collect_revdeps start = do
-  revdeps <- revdeps_of start
+collectRevDeps :: [String] -> IO [String]
+collectRevDeps start = do
+  revdeps <- revDepsOf start
   if null revdeps
     then return start
     else do
-      tree <- collect_revdeps revdeps
+      tree <- collectRevDeps revdeps
       return (start ++ revdeps ++ tree)

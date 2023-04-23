@@ -8,8 +8,8 @@ import Data.List (isInfixOf, isSuffixOf, nub)
 contains :: Eq a => [a] -> [a] -> Bool
 contains = flip isInfixOf
 
-ends_with :: Eq a => [a] -> [a] -> Bool
-ends_with = flip isSuffixOf
+endsWith :: Eq a => [a] -> [a] -> Bool
+endsWith = flip isSuffixOf
 
 unique :: Eq a => [a] -> [a]
 unique = nub
